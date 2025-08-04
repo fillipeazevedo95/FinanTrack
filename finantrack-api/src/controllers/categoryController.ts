@@ -26,7 +26,7 @@ export const getCategories = async (req: AuthenticatedRequest, res: Response) =>
     const { type } = req.query;
 
     const whereClause: any = {
-      userId: req.user.id,
+      userId: req.user!.id,
       isActive: true
     };
 
@@ -49,13 +49,13 @@ export const getCategories = async (req: AuthenticatedRequest, res: Response) =>
       }
     });
 
-    res.json({
+    return res.json({
       success: true,
       data: categories
     });
   } catch (error) {
     console.error('Erro ao buscar categorias:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Erro interno do servidor'
     });
@@ -77,7 +77,7 @@ export const getCategoryById = async (req: AuthenticatedRequest, res: Response) 
     const category = await prisma.category.findFirst({
       where: {
         id,
-        userId: req.user.id,
+        userId: req.user!.id,
         isActive: true
       },
       include: {
@@ -96,13 +96,13 @@ export const getCategoryById = async (req: AuthenticatedRequest, res: Response) 
       });
     }
 
-    res.json({
+    return res.json({
       success: true,
       data: category
     });
   } catch (error) {
     console.error('Erro ao buscar categoria:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Erro interno do servidor'
     });
@@ -125,7 +125,7 @@ export const createCategory = async (req: AuthenticatedRequest, res: Response) =
     const existingCategory = await prisma.category.findFirst({
       where: {
         name: validatedData.name,
-        userId: req.user.id,
+        userId: req.user!.id,
         isActive: true
       }
     });
@@ -140,11 +140,11 @@ export const createCategory = async (req: AuthenticatedRequest, res: Response) =
     const category = await prisma.category.create({
       data: {
         ...validatedData,
-        userId: req.user.id
+        userId: req.user!.id
       }
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       data: category,
       message: 'Categoria criada com sucesso'
@@ -160,7 +160,7 @@ export const createCategory = async (req: AuthenticatedRequest, res: Response) =
       });
     }
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Erro interno do servidor'
     });
@@ -184,7 +184,7 @@ export const updateCategory = async (req: AuthenticatedRequest, res: Response) =
     const existingCategory = await prisma.category.findFirst({
       where: {
         id,
-        userId: req.user.id,
+        userId: req.user!.id,
         isActive: true
       }
     });
@@ -201,7 +201,7 @@ export const updateCategory = async (req: AuthenticatedRequest, res: Response) =
       const duplicateCategory = await prisma.category.findFirst({
         where: {
           name: validatedData.name,
-          userId: req.user.id,
+          userId: req.user!.id,
           isActive: true,
           id: { not: id }
         }
@@ -220,7 +220,7 @@ export const updateCategory = async (req: AuthenticatedRequest, res: Response) =
       data: validatedData
     });
 
-    res.json({
+    return res.json({
       success: true,
       data: updatedCategory,
       message: 'Categoria atualizada com sucesso'
@@ -236,7 +236,7 @@ export const updateCategory = async (req: AuthenticatedRequest, res: Response) =
       });
     }
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Erro interno do servidor'
     });
@@ -259,7 +259,7 @@ export const deleteCategory = async (req: AuthenticatedRequest, res: Response) =
     const category = await prisma.category.findFirst({
       where: {
         id,
-        userId: req.user.id,
+        userId: req.user!.id,
         isActive: true
       },
       include: {
@@ -292,13 +292,13 @@ export const deleteCategory = async (req: AuthenticatedRequest, res: Response) =
       data: { isActive: false }
     });
 
-    res.json({
+    return res.json({
       success: true,
       message: 'Categoria deletada com sucesso'
     });
   } catch (error) {
     console.error('Erro ao deletar categoria:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Erro interno do servidor'
     });

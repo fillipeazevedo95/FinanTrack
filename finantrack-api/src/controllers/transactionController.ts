@@ -92,7 +92,7 @@ export const getTransactions = async (req: AuthenticatedRequest, res: Response) 
 
     const totalPages = Math.ceil(total / limitNum);
 
-    res.json({
+    return res.json({
       success: true,
       data: transactions,
       pagination: {
@@ -104,7 +104,7 @@ export const getTransactions = async (req: AuthenticatedRequest, res: Response) 
     });
   } catch (error) {
     console.error('Erro ao buscar transações:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Erro interno do servidor'
     });
@@ -147,13 +147,13 @@ export const getTransactionById = async (req: AuthenticatedRequest, res: Respons
       });
     }
 
-    res.json({
+    return res.json({
       success: true,
       data: transaction
     });
   } catch (error) {
     console.error('Erro ao buscar transação:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Erro interno do servidor'
     });
@@ -214,7 +214,7 @@ export const createTransaction = async (req: AuthenticatedRequest, res: Response
       }
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       data: transaction,
       message: 'Transação criada com sucesso'
@@ -230,7 +230,7 @@ export const createTransaction = async (req: AuthenticatedRequest, res: Response
       });
     }
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Erro interno do servidor'
     });
@@ -313,7 +313,7 @@ export const updateTransaction = async (req: AuthenticatedRequest, res: Response
       }
     });
 
-    res.json({
+    return res.json({
       success: true,
       data: updatedTransaction,
       message: 'Transação atualizada com sucesso'
@@ -329,7 +329,7 @@ export const updateTransaction = async (req: AuthenticatedRequest, res: Response
       });
     }
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Erro interno do servidor'
     });
@@ -367,13 +367,13 @@ export const deleteTransaction = async (req: AuthenticatedRequest, res: Response
       where: { id }
     });
 
-    res.json({
+    return res.json({
       success: true,
       message: 'Transação deletada com sucesso'
     });
   } catch (error) {
     console.error('Erro ao deletar transação:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Erro interno do servidor'
     });

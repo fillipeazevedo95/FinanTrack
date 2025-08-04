@@ -8,25 +8,27 @@ export const authenticateToken = async (
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
     if (!token) {
-      return res.status(401).json({
+      res.status(401).json({
         success: false,
         error: 'Token de acesso requerido'
       });
+      return;
     }
 
     const jwtSecret = process.env.JWT_SECRET;
     if (!jwtSecret) {
       console.error('JWT_SECRET não configurado');
-      return res.status(500).json({
+      res.status(500).json({
         success: false,
         error: 'Erro de configuração do servidor'
       });
+      return;
     }
 
     // Verificar e decodificar o token
@@ -34,7 +36,7 @@ export const authenticateToken = async (
 
     // Buscar o usuário no banco de dados
     const user = await prisma.user.findUnique({
-      where: { 
+      where: {
         id: decoded.userId,
         isActive: true
       },
@@ -50,33 +52,36 @@ export const authenticateToken = async (
     });
 
     if (!user) {
-      return res.status(401).json({
+      res.status(401).json({
         success: false,
         error: 'Usuário não encontrado ou inativo'
       });
+      return;
     }
 
     // Adicionar o usuário ao request
-    req.user = user;
+    req.user = user as any; // Type assertion para resolver incompatibilidade
     next();
   } catch (error) {
     console.error('Erro na autenticação:', error);
-    
+
     if (error instanceof jwt.JsonWebTokenError) {
-      return res.status(401).json({
+      res.status(401).json({
         success: false,
         error: 'Token inválido'
       });
+      return;
     }
-    
+
     if (error instanceof jwt.TokenExpiredError) {
-      return res.status(401).json({
+      res.status(401).json({
         success: false,
         error: 'Token expirado'
       });
+      return;
     }
 
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       error: 'Erro interno do servidor'
     });
@@ -88,19 +93,21 @@ export const requireAdmin = (
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
-) => {
+): void => {
   if (!req.user) {
-    return res.status(401).json({
+    res.status(401).json({
       success: false,
       error: 'Usuário não autenticado'
     });
+    return;
   }
 
   if (req.user.role !== 'ADMIN') {
-    return res.status(403).json({
+    res.status(403).json({
       success: false,
       error: 'Acesso negado. Privilégios de administrador requeridos.'
     });
+    return;
   }
 
   next();
@@ -144,7 +151,7 @@ export const generateToken = (payload: JWTPayload): string => {
     throw new Error('JWT_SECRET não configurado');
   }
 
-  return jwt.sign(payload, jwtSecret, { expiresIn: jwtExpiresIn });
+  return jwt.sign(payload, jwtSecret, { expiresIn: jwtExpiresIn } as jwt.SignOptions);
 };
 
 // Função utilitária para verificar tokens

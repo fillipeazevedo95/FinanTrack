@@ -102,7 +102,7 @@ export class FinancialService {
           id: transaction.category.id,
           name: transaction.category.name,
           color: transaction.category.color,
-          type: transaction.category.type,
+          type: transaction.category.type as 'INCOME' | 'EXPENSE',
           total: 0,
           percentage: 0,
           transactionCount: 0
@@ -302,7 +302,7 @@ export class FinancialService {
           id: transaction.category.id,
           name: transaction.category.name,
           color: transaction.category.color,
-          type: transaction.category.type,
+          type: transaction.category.type as 'INCOME' | 'EXPENSE',
           total: 0,
           percentage: 0,
           transactionCount: 0

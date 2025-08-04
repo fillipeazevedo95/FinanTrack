@@ -199,7 +199,7 @@ export class NotificationService {
       if (expenseCategories.length > 0) {
         // Dica sobre a categoria com maior gasto
         const topExpenseCategory = expenseCategories[0];
-        if (topExpenseCategory.percentage > 40) {
+        if (topExpenseCategory && topExpenseCategory.percentage > 40) {
           tips.push({
             id: `tip-top-expense-${userId}`,
             type: 'info',
@@ -230,7 +230,7 @@ export class NotificationService {
         const lastMonth = monthlyTrend[monthlyTrend.length - 1];
         const previousMonth = monthlyTrend[monthlyTrend.length - 2];
 
-        if (lastMonth.expense > previousMonth.expense * 1.2) {
+        if (lastMonth && previousMonth && lastMonth.expense > previousMonth.expense * 1.2) {
           tips.push({
             id: `tip-expense-increase-${userId}`,
             type: 'warning',
@@ -245,7 +245,7 @@ export class NotificationService {
           });
         }
 
-        if (lastMonth.income < previousMonth.income * 0.8) {
+        if (lastMonth && previousMonth && lastMonth.income < previousMonth.income * 0.8) {
           tips.push({
             id: `tip-income-decrease-${userId}`,
             type: 'info',

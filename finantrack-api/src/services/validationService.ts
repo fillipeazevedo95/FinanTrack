@@ -298,7 +298,7 @@ export class ValidationService {
       if (error instanceof z.ZodError) {
         return {
           isValid: false,
-          error: error.errors[0].message
+          error: error.errors[0]?.message || 'Erro de validação'
         };
       }
       return {

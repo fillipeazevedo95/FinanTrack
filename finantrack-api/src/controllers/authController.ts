@@ -75,7 +75,7 @@ export const register = async (req: Request, res: Response) => {
       role: user.role
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       data: {
         user,
@@ -94,7 +94,7 @@ export const register = async (req: Request, res: Response) => {
       });
     }
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Erro interno do servidor'
     });
@@ -143,7 +143,7 @@ export const login = async (req: Request, res: Response) => {
     // Remover senha da resposta
     const { password: _, ...userWithoutPassword } = user;
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         user: userWithoutPassword,
@@ -162,7 +162,7 @@ export const login = async (req: Request, res: Response) => {
       });
     }
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Erro interno do servidor'
     });
@@ -179,13 +179,13 @@ export const getProfile = async (req: AuthenticatedRequest, res: Response) => {
       });
     }
 
-    res.json({
+    return res.json({
       success: true,
       data: req.user
     });
   } catch (error) {
     console.error('Erro ao obter perfil:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Erro interno do servidor'
     });
@@ -223,7 +223,7 @@ export const updateProfile = async (req: AuthenticatedRequest, res: Response) =>
       }
     });
 
-    res.json({
+    return res.json({
       success: true,
       data: updatedUser,
       message: 'Perfil atualizado com sucesso'
@@ -239,7 +239,7 @@ export const updateProfile = async (req: AuthenticatedRequest, res: Response) =>
       });
     }
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Erro interno do servidor'
     });
@@ -294,7 +294,7 @@ export const changePassword = async (req: AuthenticatedRequest, res: Response) =
       data: { password: hashedNewPassword }
     });
 
-    res.json({
+    return res.json({
       success: true,
       message: 'Senha alterada com sucesso'
     });
@@ -309,7 +309,7 @@ export const changePassword = async (req: AuthenticatedRequest, res: Response) =
       });
     }
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Erro interno do servidor'
     });

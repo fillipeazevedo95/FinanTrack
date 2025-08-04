@@ -28,7 +28,7 @@ export const getMonthlyGoals = async (req: AuthenticatedRequest, res: Response) 
 
     const goals = await prisma.monthlyGoal.findMany({
       where: {
-        userId: req.user.id,
+        userId: req.user!.id,
         year: currentYear
       },
       orderBy: { month: 'asc' }
@@ -42,7 +42,7 @@ export const getMonthlyGoals = async (req: AuthenticatedRequest, res: Response) 
 
         const transactions = await prisma.transaction.findMany({
           where: {
-            userId: req.user.id,
+            userId: req.user!.id,
             date: {
               gte: startOfMonth,
               lte: endOfMonth
@@ -73,13 +73,13 @@ export const getMonthlyGoals = async (req: AuthenticatedRequest, res: Response) 
       })
     );
 
-    res.json({
+    return res.json({
       success: true,
       data: goalsWithProgress
     });
   } catch (error) {
     console.error('Erro ao buscar metas mensais:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Erro interno do servidor'
     });
@@ -97,8 +97,16 @@ export const getMonthlyGoal = async (req: AuthenticatedRequest, res: Response) =
     }
 
     const { month, year } = req.params;
-    const monthNum = parseInt(month);
-    const yearNum = parseInt(year);
+
+    if (!month || !year) {
+      return res.status(400).json({
+        success: false,
+        error: 'Mês e ano são obrigatórios'
+      });
+    }
+
+    const monthNum = parseInt(month as string);
+    const yearNum = parseInt(year as string);
 
     if (monthNum < 1 || monthNum > 12) {
       return res.status(400).json({
@@ -109,7 +117,7 @@ export const getMonthlyGoal = async (req: AuthenticatedRequest, res: Response) =
 
     const goal = await prisma.monthlyGoal.findFirst({
       where: {
-        userId: req.user.id,
+        userId: req.user!.id,
         month: monthNum,
         year: yearNum
       }
@@ -128,7 +136,7 @@ export const getMonthlyGoal = async (req: AuthenticatedRequest, res: Response) =
 
     const transactions = await prisma.transaction.findMany({
       where: {
-        userId: req.user.id,
+        userId: req.user!.id,
         date: {
           gte: startOfMonth,
           lte: endOfMonth
@@ -157,13 +165,13 @@ export const getMonthlyGoal = async (req: AuthenticatedRequest, res: Response) =
       goalBalance: Number(goal.income) - Number(goal.expense)
     };
 
-    res.json({
+    return res.json({
       success: true,
       data: goalWithProgress
     });
   } catch (error) {
     console.error('Erro ao buscar meta mensal:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Erro interno do servidor'
     });
@@ -185,7 +193,7 @@ export const setMonthlyGoal = async (req: AuthenticatedRequest, res: Response) =
     // Verificar se já existe uma meta para este mês/ano
     const existingGoal = await prisma.monthlyGoal.findFirst({
       where: {
-        userId: req.user.id,
+        userId: req.user!.id,
         month: validatedData.month,
         year: validatedData.year
       }
@@ -209,13 +217,13 @@ export const setMonthlyGoal = async (req: AuthenticatedRequest, res: Response) =
       goal = await prisma.monthlyGoal.create({
         data: {
           ...validatedData,
-          userId: req.user.id
+          userId: req.user!.id
         }
       });
       message = 'Meta mensal criada com sucesso';
     }
 
-    res.status(existingGoal ? 200 : 201).json({
+    return res.status(existingGoal ? 200 : 201).json({
       success: true,
       data: goal,
       message
@@ -231,7 +239,7 @@ export const setMonthlyGoal = async (req: AuthenticatedRequest, res: Response) =
       });
     }
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Erro interno do servidor'
     });
@@ -255,7 +263,7 @@ export const updateMonthlyGoal = async (req: AuthenticatedRequest, res: Response
     const existingGoal = await prisma.monthlyGoal.findFirst({
       where: {
         id,
-        userId: req.user.id
+        userId: req.user!.id
       }
     });
 
@@ -271,7 +279,7 @@ export const updateMonthlyGoal = async (req: AuthenticatedRequest, res: Response
       data: validatedData
     });
 
-    res.json({
+    return res.json({
       success: true,
       data: updatedGoal,
       message: 'Meta mensal atualizada com sucesso'
@@ -287,7 +295,7 @@ export const updateMonthlyGoal = async (req: AuthenticatedRequest, res: Response
       });
     }
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Erro interno do servidor'
     });
@@ -310,7 +318,7 @@ export const deleteMonthlyGoal = async (req: AuthenticatedRequest, res: Response
     const goal = await prisma.monthlyGoal.findFirst({
       where: {
         id,
-        userId: req.user.id
+        userId: req.user!.id
       }
     });
 
@@ -325,13 +333,13 @@ export const deleteMonthlyGoal = async (req: AuthenticatedRequest, res: Response
       where: { id }
     });
 
-    res.json({
+    return res.json({
       success: true,
       message: 'Meta mensal deletada com sucesso'
     });
   } catch (error) {
     console.error('Erro ao deletar meta mensal:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Erro interno do servidor'
     });

@@ -33,7 +33,7 @@ export const getFinancialSummary = async (req: AuthenticatedRequest, res: Respon
     // Buscar transações do mês atual
     const monthlyTransactions = await prisma.transaction.findMany({
       where: {
-        userId: req.user.id,
+        userId: req.user!.id,
         date: {
           gte: startOfMonth,
           lte: endOfMonth
@@ -65,7 +65,7 @@ export const getFinancialSummary = async (req: AuthenticatedRequest, res: Respon
     // Buscar saldo total (todas as transações)
     const allTransactions = await prisma.transaction.findMany({
       where: {
-        userId: req.user.id,
+        userId: req.user!.id,
         date: { lte: endOfMonth }
       }
     });
@@ -83,7 +83,7 @@ export const getFinancialSummary = async (req: AuthenticatedRequest, res: Respon
     // Buscar meta mensal
     const monthlyGoal = await prisma.monthlyGoal.findFirst({
       where: {
-        userId: req.user.id,
+        userId: req.user!.id,
         month: currentMonth,
         year: currentYear
       }
@@ -91,7 +91,7 @@ export const getFinancialSummary = async (req: AuthenticatedRequest, res: Respon
 
     // Transações recentes (últimas 5)
     const recentTransactions = await prisma.transaction.findMany({
-      where: { userId: req.user.id },
+      where: { userId: req.user!.id },
       include: {
         category: {
           select: {
@@ -106,7 +106,7 @@ export const getFinancialSummary = async (req: AuthenticatedRequest, res: Respon
       take: 5
     });
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         currentBalance,
@@ -123,7 +123,7 @@ export const getFinancialSummary = async (req: AuthenticatedRequest, res: Respon
     });
   } catch (error) {
     console.error('Erro ao obter resumo financeiro:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Erro interno do servidor'
     });
@@ -160,7 +160,7 @@ export const getMonthlyReport = async (req: AuthenticatedRequest, res: Response)
     // Buscar transações do mês
     const transactions = await prisma.transaction.findMany({
       where: {
-        userId: req.user.id,
+        userId: req.user!.id,
         date: {
           gte: startOfMonth,
           lte: endOfMonth
@@ -225,13 +225,13 @@ export const getMonthlyReport = async (req: AuthenticatedRequest, res: Response)
     // Buscar meta mensal
     const monthlyGoal = await prisma.monthlyGoal.findFirst({
       where: {
-        userId: req.user.id,
+        userId: req.user!.id,
         month: reportMonth,
         year: reportYear
       }
     });
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         month: reportMonth,
@@ -247,7 +247,7 @@ export const getMonthlyReport = async (req: AuthenticatedRequest, res: Response)
     });
   } catch (error) {
     console.error('Erro ao obter relatório mensal:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Erro interno do servidor'
     });
@@ -286,7 +286,7 @@ export const getCustomPeriodReport = async (req: AuthenticatedRequest, res: Resp
     // Buscar transações do período
     const transactions = await prisma.transaction.findMany({
       where: {
-        userId: req.user.id,
+        userId: req.user!.id,
         date: {
           gte: start,
           lte: end
@@ -348,7 +348,7 @@ export const getCustomPeriodReport = async (req: AuthenticatedRequest, res: Resp
       };
     });
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         startDate: startDate as string,
@@ -363,7 +363,7 @@ export const getCustomPeriodReport = async (req: AuthenticatedRequest, res: Resp
     });
   } catch (error) {
     console.error('Erro ao obter relatório personalizado:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Erro interno do servidor'
     });
@@ -380,15 +380,15 @@ export const getNotifications = async (req: AuthenticatedRequest, res: Response)
       });
     }
 
-    const notifications = await NotificationService.getAllNotifications(req.user.id);
+    const notifications = await NotificationService.getAllNotifications(req.user!.id);
 
-    res.json({
+    return res.json({
       success: true,
       data: notifications
     });
   } catch (error) {
     console.error('Erro ao obter notificações:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Erro interno do servidor'
     });
