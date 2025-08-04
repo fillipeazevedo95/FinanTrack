@@ -65,10 +65,15 @@ app.use('*', (req, res) => {
 // Iniciar servidor
 const startServer = async () => {
   try {
+    console.log('🔄 Iniciando servidor FinanTrack...');
+
     // Conectar ao banco de dados
+    console.log('🔄 Conectando ao banco de dados...');
     await connectDatabase();
+    console.log('✅ Banco de dados conectado com sucesso');
 
     // Iniciar servidor
+    console.log('🔄 Iniciando servidor HTTP...');
     app.listen(PORT, () => {
       console.log(`🚀 Servidor FinanTrack rodando na porta ${PORT}`);
       console.log(`📊 Ambiente: ${process.env.NODE_ENV || 'development'}`);
@@ -81,4 +86,5 @@ const startServer = async () => {
   }
 };
 
+console.log('🔄 Carregando aplicação...');
 startServer();

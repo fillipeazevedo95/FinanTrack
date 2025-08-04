@@ -19,7 +19,7 @@ if (process.env.NODE_ENV === 'development') {
 export const connectDatabase = async () => {
   try {
     await prisma.$connect();
-    console.log('✅ Conectado ao banco de dados PostgreSQL');
+    console.log('✅ Conectado ao banco de dados');
   } catch (error) {
     console.error('❌ Erro ao conectar com o banco de dados:', error);
     process.exit(1);
