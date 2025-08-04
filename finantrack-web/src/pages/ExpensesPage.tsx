@@ -70,10 +70,10 @@ export const ExpensesPage: React.FC = () => {
       type: 'EXPENSE',
       description: formData.description,
       amount: -Math.abs(parseFloat(formData.amount)), // Garantir que seja negativo
-      date: formData.date,
+      date: formData.date || new Date().toISOString().split('T')[0],
       category: formData.category,
       createdAt: editingTransaction?.createdAt || new Date().toISOString()
-    };
+    } as Transaction;
 
     saveTransaction(transaction);
     loadExpenses();

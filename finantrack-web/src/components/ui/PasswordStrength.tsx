@@ -52,7 +52,7 @@ export const PasswordStrength: React.FC<PasswordStrengthProps> = ({
       { min: 5, label: 'Muito forte', color: 'bg-green-600', textColor: 'text-green-700' }
     ];
     
-    const currentLevel = strengthLevels.reverse().find(level => passedRequirements >= level.min) || strengthLevels[0];
+    const currentLevel = strengthLevels.reverse().find(level => passedRequirements >= level.min) ?? strengthLevels[0]!;
     
     return {
       strength: passedRequirements,

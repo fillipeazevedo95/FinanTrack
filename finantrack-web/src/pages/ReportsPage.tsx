@@ -46,9 +46,9 @@ export const ReportsPage: React.FC = () => {
       
       if (monthlyStats[monthKey]) {
         if (transaction.type === 'INCOME') {
-          monthlyStats[monthKey].income += transaction.amount;
+          monthlyStats[monthKey]!.income += transaction.amount;
         } else {
-          monthlyStats[monthKey].expense += Math.abs(transaction.amount);
+          monthlyStats[monthKey]!.expense += Math.abs(transaction.amount);
         }
       }
     });

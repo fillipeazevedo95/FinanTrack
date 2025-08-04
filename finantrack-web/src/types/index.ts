@@ -17,6 +17,7 @@ export interface Category {
   color: string;
   type: 'INCOME' | 'EXPENSE';
   userId: string;
+  isActive: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -108,15 +109,27 @@ export interface MonthlyReport {
 }
 
 export interface DashboardData {
-  currentBalance: number;
-  monthlyIncome: number;
-  monthlyExpense: number;
-  monthlyGoal?: MonthlyGoal;
+  totalIncome: number;
+  totalExpense: number;
+  balance: number;
+  transactionCount: number;
+  categories: CategoryReport[];
+  monthlyGoal: MonthlyGoal | null;
   recentTransactions: Transaction[];
-  period: {
+  trend: Array<{
+    month: string;
+    income: number;
+    expense: number;
+    balance: number;
+  }>;
+  period?: {
     month: number;
     year: number;
   };
+  currentBalance: number;
+  monthlyIncome: number;  
+  monthlyExpense: number;
+  categoryBreakdown: CategoryReport[];
 }
 
 // DTOs para formulários
@@ -189,15 +202,7 @@ export interface CategoryReport {
   transactionCount: number;
 }
 
-// Tipos para dashboard
-export interface DashboardData {
-  currentBalance: number;
-  monthlyIncome: number;
-  monthlyExpense: number;
-  recentTransactions: Transaction[];
-  monthlyGoal?: MonthlyGoal;
-  categoryBreakdown: CategoryReport[];
-}
+// Interface removida - declaração consolidada acima
 
 // Tipos para resposta da API
 export interface ApiResponse<T = any> {

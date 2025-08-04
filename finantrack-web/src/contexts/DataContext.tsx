@@ -69,8 +69,11 @@ export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
 
     if (transactionIndex === -1) return null;
 
-    const updatedTransaction = { ...transactions[transactionIndex], ...data };
-    transactions[transactionIndex] = updatedTransaction;
+    const transaction = transactions[transactionIndex];
+    if (!transaction) return null;
+
+    // Merge os dados mantendo a tipagem correta
+    Object.assign(transaction, data);
 
     // Usar a função saveTransactions do storage.ts em vez de acessar diretamente o localStorage
     import('../utils/storage').then(storage => {
@@ -79,7 +82,7 @@ export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
     
     setTransactions(transactions);
     refreshData();
-    return updatedTransaction;
+    return transaction;
   };
 
   // Deletar transação

@@ -67,10 +67,10 @@ export const IncomePage: React.FC = () => {
       type: 'INCOME',
       description: formData.description,
       amount: parseFloat(formData.amount),
-      date: formData.date,
+      date: formData.date || new Date().toISOString().split('T')[0],
       category: formData.category,
       createdAt: editingTransaction?.createdAt || new Date().toISOString()
-    };
+    } as Transaction;
 
     saveTransaction(transaction);
     loadIncomes();

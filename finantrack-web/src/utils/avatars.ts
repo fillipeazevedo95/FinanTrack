@@ -55,7 +55,7 @@ export const SIMPLE_AVATARS = [
 export const getRandomAvatar = (): string => {
   const allAvatars = [...RANDOM_AVATARS, ...SIMPLE_AVATARS];
   const randomIndex = Math.floor(Math.random() * allAvatars.length);
-  return allAvatars[randomIndex];
+  return allAvatars[randomIndex] || '👤';
 };
 
 // Função para obter avatar baseado no nome
@@ -65,7 +65,7 @@ export const getAvatarFromName = (name: string): string => {
   // Usar o primeiro caractere do nome para gerar um avatar consistente
   const charCode = name.charCodeAt(0);
   const index = charCode % RANDOM_AVATARS.length;
-  return RANDOM_AVATARS[index];
+  return RANDOM_AVATARS[index] || '👤';
 };
 
 // Função para obter lista de avatares para seleção
