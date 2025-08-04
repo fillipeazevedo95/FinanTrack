@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      String   @default("USER") // USER ou ADMIN
+  avatar    String?  // URL do avatar do usuário
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relacionamentos
+  categories    Category[]
+  transactions  Transaction[]
+  monthlyGoals  MonthlyGoal[]
+
+  @@map("users")
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  color       String   @default("#3B82F6")
+  type        String   // INCOME ou EXPENSE
+  userId      String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relacionamentos
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+
+  @@unique([name, userId])
+  @@map("categories")
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  description String
+  amount      Float    // Usando Float em vez de Decimal para SQLite
+  type        String   // INCOME ou EXPENSE
+  date        DateTime // Removendo @db.Date para SQLite
+  userId      String
+  categoryId  String
+  notes       String?  // Notas adicionais sobre a transação
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relacionamentos
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  @@map("transactions")
+}
+
+model MonthlyGoal {
+  id        String   @id @default(cuid())
+  month     Int      // 1-12
+  year      Int
+  income    Float    // Usando Float em vez de Decimal para SQLite
+  expense   Float    // Usando Float em vez de Decimal para SQLite
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relacionamentos
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([month, year, userId])
+  @@map("monthly_goals")
+}
