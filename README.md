@@ -3,14 +3,14 @@
 <div align="center">
   <img src="https://img.shields.io/badge/React-18.2.0-blue?style=for-the-badge&logo=react" alt="React" />
   <img src="https://img.shields.io/badge/TypeScript-5.3.3-blue?style=for-the-badge&logo=typescript" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/Node.js-20.x-green?style=for-the-badge&logo=node.js" alt="Node.js" />
-  <img src="https://img.shields.io/badge/Prisma-5.x-indigo?style=for-the-badge&logo=prisma" alt="Prisma" />
+  <img src="https://img.shields.io/badge/Supabase-3CA55C?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase" />
   <img src="https://img.shields.io/badge/TailwindCSS-3.x-cyan?style=for-the-badge&logo=tailwindcss" alt="Tailwind" />
+  <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
 </div>
 
 <div align="center">
-  <h3>Sistema completo de controle financeiro pessoal com interface moderna e responsiva</h3>
-  <p>Gerencie suas receitas, despesas, categorias e visualize relatórios detalhados</p>
+  <h3>Sistema completo de controle financeiro pessoal com Supabase</h3>
+  <p>Frontend-only com autenticação, banco de dados e APIs serverless</p>
 </div>
 
 ---
@@ -34,10 +34,10 @@
 - ⚡ **Loading States** - Feedback visual durante carregamentos
 - 🔔 **Notificações** - Sistema de alertas e confirmações
 
-### � **Segurança e UX**
-- 🔒 **Autenticação JWT** - Login seguro com refresh tokens
-- 👤 **Gestão de Usuários** - Perfis individuais protegidos
-- 🛡️ **Validações** - Frontend (React Hook Form) e backend
+### 🔒 **Segurança e UX**
+- 🔐 **Supabase Auth** - Autenticação segura com sessões automáticas
+- 👤 **Row Level Security** - Isolamento total de dados por usuário
+- 🛡️ **Validações** - Frontend (React Hook Form) + Supabase policies
 - 🔐 **Rotas Protegidas** - Acesso controlado por autenticação
 - ♿ **Acessibilidade** - Suporte a leitores de tela
 - 🌙 **Preparado para Dark Mode** - Estrutura para tema escuro
@@ -45,68 +45,129 @@
 ## 🛠️ Tecnologias
 
 ### Frontend
-- React.js
-- TypeScript
-- HTML5
-- CSS3 (Flexbox)
+- **React.js 18** - Framework principal
+- **TypeScript** - Tipagem estática
+- **Tailwind CSS** - Estilização utility-first
+- **React Hook Form** - Gerenciamento de formulários
+- **Chart.js** - Gráficos interativos
+- **Lucide React** - Ícones SVG otimizados
 
-### Backend
-- Node.js
-- Express.js
-- TypeScript
-- Prisma ORM
+### Backend (Serverless)
+- **Supabase** - Backend-as-a-Service completo
+- **PostgreSQL** - Banco de dados relacional
+- **Row Level Security** - Isolamento de dados automático
+- **Supabase Auth** - Autenticação gerenciada
+- **Edge Functions** - Funções serverless (preparado)
 
-### Banco de Dados
-- PostgreSQL (via Railway/Supabase)
-
-### Autenticação
-- bcrypt
-- JWT
+### Ferramentas de Desenvolvimento
+- **CRACO** - Configuração React otimizada
+- **Jest + Testing Library** - Testes automatizados
+- **Cypress** - Testes E2E
+- **ESLint + Prettier** - Linting e formatação
 
 ### Deploy
-- **Frontend**: Vercel
-- **Backend**: Railway ou Supabase
+- **Frontend**: Vercel, Netlify ou Supabase Hosting
+- **Backend**: Supabase (gerenciado automaticamente)
 
 ## 📁 Estrutura do Projeto
 
 ```
 /
-├── finantrack-api/          # Backend
+├── finantrack-web/              # Aplicação Principal
 │   ├── src/
-│   │   ├── controllers/
-│   │   ├── services/
-│   │   ├── routes/
-│   │   ├── models/
-│   │   └── middlewares/
-│   ├── prisma/
-│   ├── .env
-│   └── server.ts
-│
-└── finantrack-web/          # Frontend
-    ├── src/
-    │   ├── components/
-    │   ├── pages/
-    │   ├── services/
-    │   ├── hooks/
-    │   └── utils/
-    ├── public/
-    └── package.json
+│   │   ├── components/          # Componentes reutilizáveis
+│   │   │   ├── ui/             # Design System
+│   │   │   └── charts/         # Componentes de gráficos
+│   │   ├── pages/              # Páginas da aplicação
+│   │   ├── services/           # Integração com Supabase
+│   │   ├── contexts/           # Context API (Auth, Data, Theme)
+│   │   ├── types/              # Definições TypeScript
+│   │   ├── utils/              # Funções utilitárias
+│   │   └── config/             # Configurações (Supabase)
+│   ├── public/                 # Assets estáticos
+│   ├── cypress/                # Testes E2E
+│   ├── .env                    # Variáveis de ambiente
+│   └── package.json            # Dependências e scripts
+├── supabase-schema.sql         # Schema do banco de dados
+├── SUPABASE_SETUP.md          # Guia de configuração
+└── README.md                   # Documentação
 ```
 
-## 🚀 Como executar
+## 🚀 Configuração e Execução
 
-### Backend
+### 1. **Pré-requisitos**
+- Node.js 18+
+- Conta no [Supabase](https://supabase.com)
+- Git
+
+### 2. **Configuração do Supabase**
+1. Crie um projeto no Supabase
+2. Execute o schema SQL (`supabase-schema.sql`) no SQL Editor
+3. Copie as credenciais do projeto
+
+### 3. **Configuração Local**
 ```bash
-cd finantrack-api
+# Clone o repositório
+git clone <seu-repositorio>
+cd FinanTrack/finantrack-web
+
+# Instale as dependências
 npm install
-npm run dev
+
+# Configure as variáveis de ambiente
+cp .env.example .env
+# Edite o .env com suas credenciais do Supabase
 ```
 
-### Frontend
+### 4. **Executar a Aplicação**
 ```bash
-cd finantrack-web
-npm install
+# Desenvolvimento
 npm start
+
+# Build de produção
+npm run build
+
+# Testes
+npm test
+
+# Testes E2E
+npm run cypress:open
+```
+
+### 5. **Deploy**
+```bash
+# Build otimizado
+npm run build
+
+# Deploy no Vercel (recomendado)
+vercel --prod
+
+# Deploy no Netlify
+netlify deploy --prod --dir=build
+```
+
+## 📚 Links Úteis
+
+- 📖 **[Guia de Setup do Supabase](./SUPABASE_SETUP.md)**
+- 🌐 **[Documentação do Supabase](https://supabase.com/docs)**
+- ⚛️ **[Documentação do React](https://react.dev)**
+- 🎨 **[Tailwind CSS](https://tailwindcss.com)**
+
+## 🆘 Resolução de Problemas
+
+### Erro de conexão com Supabase
+- Verifique as variáveis `REACT_APP_SUPABASE_URL` e `REACT_APP_SUPABASE_ANON_KEY`
+- Confirme que o schema SQL foi executado
+
+### Erro no registro de usuários
+- Verifique se a tabela `users` existe
+- Confirme que os triggers estão ativos
+
+### Build falha
+```bash
+# Limpe o cache e reinstale
+rm -rf node_modules package-lock.json
+npm install
 ```
 
 ## 📝 Licença
