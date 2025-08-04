@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -51,7 +51,7 @@ model Category {
 model Transaction {
   id          String   @id @default(cuid())
   description String
-  amount      Float    // Usando Float em vez de Decimal para SQLite
+  amount      Decimal  @db.Decimal(10, 2) // Usando Decimal para PostgreSQL
   type        String   // INCOME ou EXPENSE
   date        DateTime // Removendo @db.Date para SQLite
   userId      String
@@ -71,8 +71,8 @@ model MonthlyGoal {
   id        String   @id @default(cuid())
   month     Int      // 1-12
   year      Int
-  income    Float    // Usando Float em vez de Decimal para SQLite
-  expense   Float    // Usando Float em vez de Decimal para SQLite
+  income    Decimal  @db.Decimal(10, 2) // Usando Decimal para PostgreSQL
+  expense   Decimal  @db.Decimal(10, 2) // Usando Decimal para PostgreSQL
   userId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

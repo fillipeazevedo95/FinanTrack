@@ -1,4 +1,15 @@
-# 🚀 **Guia Completo de Deploy - FinanTrack**
+# 🚀 **Guia Completo de Deploy - FinanTrack
+
+## 📋 Índice
+1. [Preparação do Projeto](#preparação-do-projeto)
+2. [Configuração do Banco de Dados (Supabase)](#configuração-do-banco-de-dados-supabase)
+3. [Configuração do Backend (API)](#configuração-do-backend-api)
+4. [Deploy do Backend no Render](#deploy-do-backend-no-render)
+5. [Configuração do Frontend](#configuração-do-frontend)
+6. [Deploy do Frontend no Render](#deploy-do-frontend-no-render)
+7. [Configuração de Domínio](#configuração-de-domínio)
+8. [Testes Pós-Deploy](#testes-pós-deploy)
+9. [Solução de Problemas](#solução-de-problemas)**
 
 Este guia fornece instruções passo a passo para fazer deploy do projeto FinanTrack em produção, com frontend no Vercel e backend no Railway ou Supabase.
 
@@ -298,3 +309,92 @@ Após seguir este guia, seu FinanTrack estará online e acessível em:
 - ✅ Deploy automático
 
 **🚀 Parabéns! Seu sistema financeiro está no ar!**
+
+---
+
+## 🔧 Solução de Problemas Comuns
+
+### ❌ Problema 1: "Build Failed"
+**Sintomas:** Deploy falha durante o build
+**Soluções:**
+1. Verifique erros TypeScript: `npm run type-check`
+2. Teste build local: `npm run build`
+3. Verifique logs no Render para erros específicos
+
+### ❌ Problema 2: "Application Error"
+**Sintomas:** App não inicia após deploy
+**Soluções:**
+1. Verifique variáveis de ambiente
+2. Confirme que PORT está correto
+3. Verifique logs do servidor no Render
+
+### ❌ Problema 3: "CORS Error"
+**Sintomas:** Frontend não consegue acessar API
+**Soluções:**
+1. Verifique variável `FRONTEND_URL` no backend
+2. Confirme que `REACT_APP_API_URL` está correto
+3. Teste CORS com curl
+
+### ❌ Problema 4: "Database Error"
+**Sintomas:** Erros relacionados ao banco
+**Soluções:**
+1. Verifique se `prisma generate` rodou no build
+2. Confirme que `DATABASE_URL` está correto
+3. Execute `npx prisma db push` manualmente
+
+---
+
+## 📋 COMANDOS PRONTOS PARA USAR
+
+### 🔨 Build Commands (Backend):
+```bash
+npm install && npm run build && npx prisma generate && npx prisma db push
+```
+
+### ▶️ Start Command (Backend):
+```bash
+npm start
+```
+
+### 🔨 Build Command (Frontend):
+```bash
+npm install && npm run build
+```
+
+### 📁 Publish Directory (Frontend):
+```bash
+build
+```
+
+### 🩺 Teste Health Check:
+```bash
+curl https://finantrack-api.onrender.com/health
+```
+
+### ⚙️ Variáveis de Ambiente (Backend):
+```
+NODE_ENV=production
+DATABASE_URL=postgresql://postgres:FinanTrack2024!@db.SEU-PROJECT-REF.supabase.co:5432/postgres
+JWT_SECRET=finantrack_jwt_secret_2024_super_seguro_mude_em_producao_real
+JWT_EXPIRES_IN=7d
+FRONTEND_URL=*
+```
+
+### ⚙️ Variáveis de Ambiente (Frontend):
+```
+REACT_APP_API_URL=https://finantrack-api.onrender.com
+NODE_ENV=production
+REACT_APP_APP_NAME=FinanTrack
+```
+
+---
+
+## ⏱️ Resumo Final
+
+- **Tempo estimado:** 30-60 minutos
+- **Custo:** 100% GRATUITO 💰
+- **Plataforma:** Render.com (mais confiável)
+- **Banco de dados:** SQLite (simples e eficiente)
+- **Deploy:** Automático via GitHub
+
+**🎉 Seu FinanTrack está pronto para o mundo!**

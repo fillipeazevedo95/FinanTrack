@@ -1,7 +1,9 @@
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import toast from 'react-hot-toast';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL
+  ? `${process.env.REACT_APP_API_URL}/api`
+  : 'http://localhost:3001/api';
 
 // Criar instância do axios
 export const api = axios.create({
