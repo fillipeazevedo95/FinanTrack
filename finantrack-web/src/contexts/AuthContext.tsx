@@ -69,18 +69,47 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         
         if (event === 'SIGNED_IN' && session?.user) {
           try {
-            const userData = await authService.getProfile();
+            console.log('onAuthStateChange: Usuário logado, obtendo perfil...');
+            
+            // Timeout para evitar travamento no getProfile
+            const profilePromise = authService.getProfile();
+            const timeoutPromise = new Promise((_, reject) => 
+              setTimeout(() => reject(new Error('Timeout no getProfile')), 8000)
+            );
+            
+            const userData = await Promise.race([profilePromise, timeoutPromise]) as User;
+            console.log('onAuthStateChange: Perfil obtido:', userData);
             setUser(userData);
           } catch (error) {
             console.error('Erro ao obter perfil após login:', error);
-            setUser(null);
+            // Em caso de erro, criar um usuário básico com dados do session
+            if (session?.user) {
+              const basicUser: User = {
+                id: session.user.id,
+                email: session.user.email || '',
+                name: session.user.user_metadata?.name || session.user.user_metadata?.full_name || 'Usuário',
+                role: 'USER',
+                avatar: session.user.user_metadata?.avatar_url,
+                createdAt: session.user.created_at,
+                updatedAt: session.user.updated_at || session.user.created_at
+              };
+              console.log('Usando usuário básico devido ao erro:', basicUser);
+              setUser(basicUser);
+            } else {
+              setUser(null);
+            }
           }
         } else if (event === 'SIGNED_OUT') {
+          console.log('onAuthStateChange: Usuário deslogado');
           setUser(null);
           clearUserData();
         }
         
-        setIsLoading(false);
+        // Só definir loading como false na inicialização, não em mudanças de auth
+        // pois pode interferir com operações de login/register em andamento
+        if (event === 'INITIAL_SESSION') {
+          setIsLoading(false);
+        }
       }
     );
 
@@ -116,20 +145,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const register = async (data: RegisterFormData): Promise<void> => {
     try {
+      console.log('AuthContext: Iniciando registro...');
       setIsLoading(true);
       
       const response = await authService.register(data);
+      console.log('AuthContext: Registro bem-sucedido:', response.user);
       
       // Limpar dados de usuários anteriores
       clearUserData();
       
       setUser(response.user);
+      console.log('AuthContext: Usuário definido no state');
       toast.success('Conta criada com sucesso!');
     } catch (error: any) {
+      console.error('AuthContext: Erro no registro:', error);
       const errorMessage = error.message || 'Erro ao criar conta';
       toast.error(errorMessage);
       throw error;
     } finally {
+      console.log('AuthContext: Finalizando registro');
       setIsLoading(false);
     }
   };

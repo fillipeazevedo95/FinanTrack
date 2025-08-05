@@ -98,6 +98,72 @@
 ### 1. **Pré-requisitos**
 - Node.js 18+
 - Conta no [Supabase](https://supabase.com)
+
+### 2. **Setup Local**
+
+#### Clone o repositório:
+```bash
+git clone https://github.com/fillipeazevedo95/FinanTrack.git
+cd FinanTrack/finantrack-web
+```
+
+#### Instale as dependências:
+```bash
+npm install
+```
+
+#### Configure as variáveis de ambiente:
+Copie o arquivo `.env.example` para `.env`:
+```bash
+# Windows
+copy .env.example .env
+
+# macOS/Linux
+cp .env.example .env
+```
+
+Edite o arquivo `.env` com suas credenciais do Supabase:
+```env
+REACT_APP_SUPABASE_URL=sua_url_do_supabase
+REACT_APP_SUPABASE_ANON_KEY=sua_chave_anonima_do_supabase
+```
+
+#### Execute o projeto:
+```bash
+npm start
+```
+
+O aplicativo estará disponível em `http://localhost:3000`
+
+### 3. **Comandos Disponíveis**
+```bash
+npm start              # Executa em modo desenvolvimento
+npm run build          # Cria versão de produção
+npm test               # Executa testes
+npm run test:coverage  # Testes com cobertura
+npm run cypress:open   # Abre testes E2E
+```
+
+### 4. **Resolução de Problemas**
+
+#### Erro de dependências:
+```bash
+npm install --legacy-peer-deps
+```
+
+#### Problema com cache:
+```bash
+npm start -- --reset-cache
+```
+
+#### Reinstalação completa:
+```bash
+# Windows
+rmdir /s node_modules & del package-lock.json & npm install
+
+# macOS/Linux
+rm -rf node_modules package-lock.json && npm install
+```
 - Git
 
 ### 2. **Configuração do Supabase**

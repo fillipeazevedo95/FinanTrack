@@ -5,6 +5,8 @@ import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { PasswordStrength, validatePassword } from '../components/ui/PasswordStrength';
+import { supabase } from '../config/supabase';
+import toast from 'react-hot-toast';
 
 interface TestFormData {
   name: string;
@@ -16,6 +18,7 @@ interface TestFormData {
 export const TestPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [supabaseTest, setSupabaseTest] = useState<string>('');
   
   const {
     register,
@@ -26,6 +29,44 @@ export const TestPage: React.FC = () => {
   } = useForm<TestFormData>();
 
   const password = watch('password');
+
+  const testSupabaseConnection = async () => {
+    try {
+      setSupabaseTest('Testando conexão...');
+      
+      // Testar conexão básica
+      const { data, error } = await supabase.from('users').select('count').limit(1);
+      
+      if (error) {
+        setSupabaseTest(`❌ Erro na conexão: ${error.message}`);
+        toast.error('Erro na conexão com Supabase');
+      } else {
+        setSupabaseTest('✅ Conexão com Supabase OK!');
+        toast.success('Conexão com Supabase funcionando!');
+      }
+    } catch (error: any) {
+      setSupabaseTest(`❌ Erro: ${error.message}`);
+      toast.error('Erro na conexão');
+    }
+  };
+
+  const testAuth = async () => {
+    try {
+      setSupabaseTest('Testando autenticação...');
+      
+      const { data: { user }, error } = await supabase.auth.getUser();
+      
+      if (error) {
+        setSupabaseTest(`❌ Erro na auth: ${error.message}`);
+      } else if (user) {
+        setSupabaseTest(`✅ Usuário logado: ${user.email}`);
+      } else {
+        setSupabaseTest('ℹ️ Nenhum usuário logado');
+      }
+    } catch (error: any) {
+      setSupabaseTest(`❌ Erro: ${error.message}`);
+    }
+  };
 
   const onSubmit = async (data: TestFormData) => {
     setIsLoading(true);
@@ -49,6 +90,39 @@ export const TestPage: React.FC = () => {
             Teste todos os componentes e validações
           </p>
         </div>
+
+        {/* Testes do Supabase */}
+        <Card>
+          <h2 className="text-lg font-semibold text-gray-900 mb-6">
+            Teste de Conexão Supabase
+          </h2>
+          
+          <div className="space-y-4">
+            <div className="flex gap-4">
+              <Button 
+                type="button" 
+                onClick={testSupabaseConnection}
+                variant="outline"
+              >
+                Testar Conexão
+              </Button>
+              
+              <Button 
+                type="button" 
+                onClick={testAuth}
+                variant="outline"
+              >
+                Testar Auth
+              </Button>
+            </div>
+            
+            {supabaseTest && (
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <p className="text-sm font-mono">{supabaseTest}</p>
+              </div>
+            )}
+          </div>
+        </Card>
 
         {/* Formulário de Teste */}
         <Card>

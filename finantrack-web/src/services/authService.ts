@@ -55,6 +55,8 @@ export const authService = {
   async register(data: RegisterFormData): Promise<AuthResponse> {
     const { confirmPassword, firstName, lastName, acceptTerms, ...rest } = data;
 
+    console.log('Iniciando registro...', { email: rest.email });
+
     // Validar se as senhas coincidem
     if (data.password !== confirmPassword) {
       throw new Error('As senhas não coincidem');
@@ -68,6 +70,7 @@ export const authService = {
 
     try {
       // Criar usuário no Supabase Auth
+      console.log('Criando usuário no Supabase Auth...');
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: rest.email,
         password: rest.password,
@@ -80,6 +83,7 @@ export const authService = {
       });
 
       if (authError) {
+        console.error('Erro no auth signup:', authError);
         throw new Error(authError.message || 'Erro ao criar conta');
       }
 
@@ -87,14 +91,31 @@ export const authService = {
         throw new Error('Erro ao criar usuário');
       }
 
+      console.log('Usuário criado no auth:', authData.user.id);
+
       // Se não há sessão, significa que precisa de confirmação de email
       if (!authData.session) {
         throw new Error('Conta criada! Verifique seu email para confirmar a conta.');
       }
 
+      console.log('Sessão criada, usuário registrado com sucesso!');
+
+      // Por enquanto, usar apenas dados do auth sem depender da tabela users
+      const user = mapSupabaseUser(authData.user);
+      console.log('Usuário mapeado do auth:', user);
+
+      return {
+        user,
+        token: authData.session.access_token
+      };
+
+      /*
+      // Código comentado - depende da tabela users
+      console.log('Sessão criada, buscando perfil...');
+
       // O perfil será criado automaticamente via trigger no banco
       // Aguardar um momento para o trigger executar
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
       // Buscar o perfil criado
       const { data: profile, error: profileError } = await supabase
@@ -104,16 +125,22 @@ export const authService = {
         .single();
 
       if (profileError) {
-        console.warn('Perfil não encontrado, usando dados do auth:', profileError.message);
+        console.warn('Perfil não encontrado na tabela users:', profileError.message);
+        console.log('Usando dados do auth para criar usuário...');
+      } else {
+        console.log('Perfil encontrado na tabela users:', profile);
       }
 
       const user = mapSupabaseUser(authData.user, profile);
+      console.log('Usuário mapeado:', user);
 
       return {
         user,
         token: authData.session.access_token
       };
+      */
     } catch (error: any) {
+      console.error('Erro no registro:', error);
       // Melhorar mensagens de erro para o usuário
       if (error.message?.includes('email')) {
         throw new Error('Este email já está em uso');
@@ -127,25 +154,58 @@ export const authService = {
 
   // Obter perfil do usuário
   async getProfile(): Promise<User> {
+    console.log('Obtendo perfil do usuário...');
+    
     const { data: { user: supabaseUser }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !supabaseUser) {
+      console.error('Erro ao obter usuário autenticado:', authError);
       throw new Error('Usuário não autenticado');
     }
 
-    // Buscar perfil completo na tabela users
-    const { data: profile, error: profileError } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', supabaseUser.id)
-      .single();
+    console.log('Usuário autenticado:', supabaseUser.id, supabaseUser.email);
 
-    if (profileError) {
-      // Se não encontrar na tabela users, usar dados do auth
+    // Por enquanto, vamos usar apenas os dados do auth para evitar problemas
+    // com a tabela users que pode não existir ou ter problemas de RLS
+    console.log('Usando dados do auth (fallback seguro)');
+    return mapSupabaseUser(supabaseUser);
+
+    /*
+    // Código comentado temporariamente - pode ser habilitado quando a tabela users estiver configurada
+    try {
+      console.log('Buscando perfil na tabela users...');
+      
+      // Timeout para evitar travamento
+      const profilePromise = supabase
+        .from('users')
+        .select('*')
+        .eq('id', supabaseUser.id)
+        .single();
+      
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Timeout na consulta')), 5000)
+      );
+      
+      const { data: profile, error: profileError } = await Promise.race([
+        profilePromise,
+        timeoutPromise
+      ]) as any;
+
+      if (profileError) {
+        console.warn('Erro ao buscar perfil na tabela users:', profileError.message);
+        console.log('Usando dados do auth devido ao erro:', profileError);
+        return mapSupabaseUser(supabaseUser);
+      }
+
+      console.log('Perfil encontrado na tabela users:', profile);
+      return mapSupabaseUser(supabaseUser, profile);
+      
+    } catch (error: any) {
+      console.error('Erro na consulta à tabela users:', error);
+      console.log('Fallback: usando apenas dados do auth');
       return mapSupabaseUser(supabaseUser);
     }
-
-    return mapSupabaseUser(supabaseUser, profile);
+    */
   },
 
   // Atualizar perfil
