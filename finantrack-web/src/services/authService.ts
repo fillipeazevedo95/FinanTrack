@@ -1,7 +1,6 @@
 import { supabase } from '@/config/supabase';
 import { User, RegisterFormData } from '@/types';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
-import type { User as DBUser, UserInsert, UserUpdate } from '@/types/database';
 
 export interface AuthResponse {
   user: User;

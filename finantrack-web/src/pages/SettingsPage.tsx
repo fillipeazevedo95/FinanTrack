@@ -5,7 +5,7 @@ import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { useAuth } from '../contexts/AuthContext';
-import { getTransactions, saveTransactions } from '../utils/storage';
+import { saveTransactions } from '../utils/storage';
 import toast from 'react-hot-toast';
 
 export const SettingsPage: React.FC = () => {

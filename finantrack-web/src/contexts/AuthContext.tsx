@@ -18,15 +18,44 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        console.log('Iniciando verificação de autenticação...');
+        setIsLoading(true);
+        
+        // Timeout de segurança para evitar loading infinito
+        const timeoutId = setTimeout(() => {
+          console.warn('Timeout na verificação de autenticação');
+          setIsLoading(false);
+        }, 10000); // 10 segundos
+        
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        clearTimeout(timeoutId);
+        
+        if (error) {
+          console.error('Erro ao obter sessão:', error);
+          setIsLoading(false);
+          return;
+        }
+        
+        console.log('Sessão obtida:', session ? 'Ativa' : 'Inativa');
         
         if (session?.user) {
-          const userData = await authService.getProfile();
-          setUser(userData);
+          try {
+            const userData = await authService.getProfile();
+            console.log('Perfil do usuário obtido:', userData);
+            setUser(userData);
+          } catch (profileError) {
+            console.error('Erro ao obter perfil:', profileError);
+            setUser(null);
+          }
+        } else {
+          setUser(null);
         }
       } catch (error) {
         console.error('Erro ao inicializar auth:', error);
+        setUser(null);
       } finally {
+        console.log('Finalizando inicialização de auth');
         setIsLoading(false);
       }
     };
